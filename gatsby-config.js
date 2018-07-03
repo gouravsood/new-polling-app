@@ -1,11 +1,11 @@
 let activeEnv = process.env.ACTIVE_ENV
+console.log('activeEnv : ' + activeEnv);
 
 if (!activeEnv) {
   activeEnv = 'development'
 }
-console.log('activeEnv : ' + activeEnv);
 
-if (process.env.NODE_ENV === `production`) {
+if (activeEnv === `production`) {
   require('dotenv').config();
   
 } else{ 
