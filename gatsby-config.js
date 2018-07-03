@@ -5,10 +5,15 @@ if (!activeEnv) {
 }
 console.log('activeEnv : ' + activeEnv);
 
-require('dotenv').config({
-  path: `.env.${activeEnv}`,
-})
-
+if (process.env.NODE_ENV === `production`) {
+  require('dotenv').config();
+  
+} else{ 
+  require('dotenv').config({
+    path: `.env.${activeEnv}`,
+  });
+  
+  }
 module.exports = {
   siteMetadata: {
     title: 'Polling App',
