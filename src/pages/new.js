@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import Link from 'gatsby-link';
 import { arrayMove } from 'react-sortable-hoc';
 import shortId from 'short-id';
 
@@ -18,31 +18,39 @@ const ActionContainer = styled.div`
   justify-content: flex-end;
 `;
 
+const TitleContainer = styled.div`
+  display: inline-flex;
+  width: 350px;
+  flex-direction: column;
+  margin-bottom: 30px;
+`;
+
+const TitleLabel = styled.label`
+  font-weight: bold;
+`;
+
+const TitleInput = styled.input`
+  color: black;
+  font-size: 18px;
+`;
+
 class NewPollPage extends Component {
-  state = {
-    options: [
-      {
-        text: 'option1',
-        id: '123avcs232',
-        editing: false,
-      },
-      {
-        text: 'option2',
-        id: '123av35df2',
-        editing: false,
-      },
-      {
-        text: 'option3',
-        id: '12323dsdsv35df2',
-        editing: false,
-      },
-      {
-        text: 'option4',
-        id: 'ac24312v35df2',
-        editing: false,
-      },
-    ],
+  static contextTypes = {
+    firebase: PropTypes.object,
   };
+
+  static propTypes = {
+    history: PropTypes.object.isRequired,
+    uid: PropTypes.string,
+    signIn: PropTypes.func.isRequired,
+  };
+
+  state = {
+    title: '',
+    options: [],
+    loading: false,
+  };
+
   // to keep track of what item is being edited
   editing = null;
 
@@ -82,6 +90,14 @@ class NewPollPage extends Component {
     });
   };
 
+  handleTitleChange = e => {
+    const { value } = e.target;
+
+    this.setState({
+      title: value,
+    });
+  };
+
   handleTextChange = (e, id) => {
     const options = this.state.options.map(option => {
       if (option.id === id) {
@@ -112,7 +128,7 @@ class NewPollPage extends Component {
     const options = this.state.options
       // filter out any falsy values from the list
       .filter(Boolean)
-      .filter(({ text }) => text)
+      .filter(({ text }) => !!text.trim())
       .map(option => ({
         ...option,
         editing: false,
@@ -142,12 +158,68 @@ class NewPollPage extends Component {
     });
   };
 
+  handleCreate = () => {
+    const pollId = shortId.generate();
+    const { signIn, uid } = this.props;
+
+    this.setState({
+      loading: true,
+    });
+
+    if (!uid) {
+      // due to our database rules, we can't write unless a uid exists
+      signIn('anonymous').then(() => {
+        this.createPoll(pollId);
+      });
+    } else {
+      this.createPoll(pollId);
+    }
+  };
+
+  createPoll(pollId) {
+    const { firebase } = this.context;
+    const { options, title } = this.state;
+    const { history } = this.props;
+
+    firebase.polls
+      .doc(pollId)
+      .set({
+        title,
+        id: pollId,
+        options: options.map(({ text, id }) => ({ text, optionId: id })),
+      })
+      .then(() => {
+        this.setState({
+          options: [],
+          loading: false,
+          title: '',
+        });
+
+        history.push(`/poll/${pollId}`);
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        // TODO: notify the user of the error
+      });
+  }
+
   render() {
-    const { options } = this.state;
+    const { options, loading, title } = this.state;
+    const optionsWithText = options.filter(({ text }) => !!text.trim());
+    const disableCreate = !title || optionsWithText.length < 2 || loading;
 
     return (
       <div>
         <Heading2>Create a new Poll</Heading2>
+        <TitleContainer>
+          <TitleLabel htmlFor="newPollTitle">Title</TitleLabel>
+          <TitleInput
+            id="newPollTitle"
+            value={title}
+            onChange={this.handleTitleChange}
+          />
+        </TitleContainer>
         <NewPoll
           options={options}
           onToggleEdit={this.handleToggleEdit}
@@ -157,10 +229,17 @@ class NewPollPage extends Component {
           onDelete={this.handleDelete}
         />
         <ActionContainer>
-          <Link to="/new">
-            <Button>Create</Button>
-          </Link>
-          <CreateButton onClick={this.handleAddItem}>Add</CreateButton>
+          <Button
+            disabled={disableCreate}
+            onClick={!disableCreate && this.handleCreate}>
+            {loading ? 'Creating...' : 'Create'}
+          </Button>
+
+          <CreateButton
+            disabled={loading}
+            onClick={!loading && this.handleAddItem}>
+            Add
+          </CreateButton>
         </ActionContainer>
       </div>
     );

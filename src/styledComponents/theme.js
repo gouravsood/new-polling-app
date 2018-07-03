@@ -8,11 +8,11 @@ export const Button = styled.button`
   text-transform: uppercase;
   border: none;
   font-family: sans-serif;
-  filter: hue-rotate(0deg);
+  filter: ${({ disabled }) => disabled ? 'grayscale(1)' : 'hue-rotate(0deg)'};
   transition: filter 300ms linear;
-  cursor: pointer;
+  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
   &:focus,
   &:hover {
-    filter: hue-rotate(45deg);
+    filter: ${({ disabled }) => !disabled && 'hue-rotate(45deg)'};
   }
 `;
