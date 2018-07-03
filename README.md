@@ -1,4 +1,4 @@
-# gatsby-starter-default
+# Polling App. built with [Gatsby.js](https://www.gatsbyjs.org/), [Firebase](https://firebase.google.com/), and [Styled-components](https://www.styled-components.com/)
 This repo is created while following amazing post from [Unicorn Agency](https://medium.com/@UnicornAgency) Blog Post on Medium.com
 
 - [JAMstack PWA — Let’s Build a Polling App. with Gatsby.js, Firebase, and Styled-components Pt. 1](https://medium.com/@UnicornAgency/jamstack-pwa-lets-build-a-polling-app-with-gatsby-js-firebase-and-styled-components-pt-1-78a03a633092)
