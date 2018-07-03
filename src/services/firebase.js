@@ -1,15 +1,6 @@
 import firebase from "firebase"
 import "firebase/firestore"
 
-// const config = {
-// apiKey: ,
-// authDomain: ,
-// databaseURL: ,
-// projectId: ,
-// storageBucket: ,
-// messagingSenderId: ,
-// }
-
 var config = {
     apiKey: process.env.apiKey,
     authDomain: process.env.authDomain,
@@ -18,9 +9,6 @@ var config = {
     storageBucket: process.env.storageBucket,
     messagingSenderId: process.env.messagingSenderId
   };
-
-
-console.log(config);
 
 class Firebase {
   constructor() {
