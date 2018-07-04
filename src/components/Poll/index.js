@@ -56,7 +56,9 @@ const Option = styled(
   color: ${({ selected, optionIsSelected }) =>
     selected
       ? 'rgba(0, 0, 0, 0.8)'
-      : optionIsSelected ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.6)'};
+      : optionIsSelected
+        ? 'rgba(0, 0, 0, 0.4)'
+        : 'rgba(0, 0, 0, 0.6)'};
   ${({ hasVoted }) =>
     hasVoted
       ? css`
@@ -111,7 +113,7 @@ const Poll = ({
           optionsArray.map(option => {
             const id = option.optionId;
             const selected = id === selection;
-            const perc = (option.votes / totalVotes * 100).toFixed(2) || 0;
+            const perc = ((option.votes / totalVotes) * 100).toFixed(2) || 0;
 
             return (
               <Option

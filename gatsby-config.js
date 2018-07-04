@@ -1,19 +1,15 @@
-let activeEnv = process.env.ACTIVE_ENV
-console.log('activeEnv : ' + activeEnv);
+let activeEnv = process.env.ACTIVE_ENV;
 
 if (!activeEnv) {
-  activeEnv = 'development'
+  activeEnv = "development";
 }
 
-if (activeEnv === `production`) {
-  require('dotenv').config();
-  
-} else{ 
-  require('dotenv').config({
-    path: `.env.${activeEnv}`,
-  });
-  
-  }
+require("dotenv").config({
+  path: `.env.${activeEnv}`,
+});
+
+console.log(activeEnv);
+
 module.exports = {
   siteMetadata: {
     title: 'Polling App',
